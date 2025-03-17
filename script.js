@@ -567,6 +567,58 @@ document.addEventListener('DOMContentLoaded', () => {
         
         URL.revokeObjectURL(url);
     });
+
+    // Add YouTube functionality
+    const youtubeInput = document.getElementById('youtube-url');
+    const loadYoutubeBtn = document.getElementById('load-youtube');
+
+    loadYoutubeBtn.addEventListener('click', async () => {
+        const url = youtubeInput.value.trim();
+        if (!url) {
+            alert('Please enter a YouTube URL');
+            return;
+        }
+
+        try {
+            initAudio();
+            
+            // Show loading state
+            loadYoutubeBtn.disabled = true;
+            loadYoutubeBtn.textContent = 'Loading...';
+
+            // Fetch audio from our server
+            const response = await fetch(`http://localhost:3000/youtube-audio?url=${encodeURIComponent(url)}`);
+            if (!response.ok) {
+                throw new Error('Failed to load YouTube audio');
+            }
+
+            const arrayBuffer = await response.arrayBuffer();
+            audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+
+            // Reset song signature for new audio
+            songSignature = {
+                fileName: 'YouTube Audio',
+                suggestedPattern: 'classic'
+            };
+
+            // Enable play button
+            playBtn.disabled = false;
+            pauseBtn.disabled = true;
+
+            // Create particles
+            createParticles();
+
+            // Reset loading state
+            loadYoutubeBtn.disabled = false;
+            loadYoutubeBtn.textContent = 'Load YouTube';
+
+        } catch (error) {
+            console.error('Error loading YouTube audio:', error);
+            alert('Could not load YouTube audio. Please check the URL and try again.');
+            loadYoutubeBtn.disabled = false;
+            loadYoutubeBtn.textContent = 'Load YouTube';
+        }
+    });
 });
 
 function updateInfoPanel(frequencyData) {
