@@ -55,6 +55,15 @@ button {
     cursor: pointer;
     transition: all 0.3s ease;
     font-size: 0.9rem;
+    text-transform: uppercase;
+}
+
+#export-png, #export-svg {
+    background-color: #2a6b2a;
+}
+
+#export-png:hover, #export-svg:hover {
+    background-color: #3a8a3a;
 }
 
 button:hover:not([disabled]) {

@@ -101,14 +101,37 @@ document.addEventListener('DOMContentLoaded', () => {
             dominantFreqBand = 'treble';
         }
         
-        // Dynamic pattern selection based on song characteristics
+        // Enhanced dynamic pattern selection based on song characteristics
         if (document.getElementById('pattern-mode').value === 'auto') {
-            if (dominantFreqBand === 'bass') {
-                songSignature.suggestedPattern = 'radial';
-            } else if (dominantFreqBand === 'mid') {
-                songSignature.suggestedPattern = 'classic';
+            const bassRatio = bassSum / 255;
+            const midRatio = midSum / 255;
+            const trebleRatio = trebleSum / 255;
+            
+            // Create more unique patterns based on frequency characteristics
+            if (bassSum > midSum && bassSum > trebleSum) {
+                if (trebleRatio > 0.4) {
+                    songSignature.suggestedPattern = 'spectrum'; // Bass-heavy with high treble
+                } else {
+                    songSignature.suggestedPattern = 'radial'; // Pure bass-heavy
+                }
+            } else if (midSum > bassSum && midSum > trebleSum) {
+                if (bassRatio > 0.3) {
+                    songSignature.suggestedPattern = 'wave'; // Mid-heavy with bass
+                } else {
+                    songSignature.suggestedPattern = 'classic'; // Pure mid-heavy
+                }
             } else {
-                songSignature.suggestedPattern = 'wave';
+                if (midRatio > 0.3) {
+                    songSignature.suggestedPattern = 'spectrum'; // Treble with mids
+                } else {
+                    songSignature.suggestedPattern = 'wave'; // Pure treble
+                }
+            }
+            
+            // Add random pattern changes on strong beats
+            if (bassRatio > 0.7 && Math.random() > 0.7) {
+                const patterns = ['radial', 'wave', 'spectrum', 'classic'];
+                songSignature.suggestedPattern = patterns[Math.floor(Math.random() * patterns.length)];
             }
         }
         
@@ -495,6 +518,55 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+    
+    // Add export functionality
+    const exportPNG = document.getElementById('export-png');
+    const exportSVG = document.getElementById('export-svg');
+    
+    exportPNG.addEventListener('click', () => {
+        const dataURL = canvas.toDataURL('image/png');
+        const link = document.createElement('a');
+        link.download = 'visualizer-export.png';
+        link.href = dataURL;
+        link.click();
+    });
+    
+    exportSVG.addEventListener('click', () => {
+        // Create SVG
+        const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        svg.setAttribute('width', canvasWidth);
+        svg.setAttribute('height', canvasHeight);
+        svg.setAttribute('viewBox', `0 0 ${canvasWidth} ${canvasHeight}`);
+        
+        // Add background
+        const background = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        background.setAttribute('width', '100%');
+        background.setAttribute('height', '100%');
+        background.setAttribute('fill', '#000000');
+        svg.appendChild(background);
+        
+        // Convert particles to SVG circles
+        particles.forEach(p => {
+            const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            circle.setAttribute('cx', p.x);
+            circle.setAttribute('cy', p.y);
+            circle.setAttribute('r', p.size);
+            circle.setAttribute('fill', p.color);
+            svg.appendChild(circle);
+        });
+        
+        // Convert SVG to string and download
+        const svgData = new XMLSerializer().serializeToString(svg);
+        const svgBlob = new Blob([svgData], {type: 'image/svg+xml;charset=utf-8'});
+        const url = URL.createObjectURL(svgBlob);
+        
+        const link = document.createElement('a');
+        link.download = 'visualizer-export.svg';
+        link.href = url;
+        link.click();
+        
+        URL.revokeObjectURL(url);
+    });
 });
 
 function updateInfoPanel(frequencyData) {
