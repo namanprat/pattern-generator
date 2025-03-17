@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Music Visualizer</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Music Visualizer</h1>
+        
+        <div class="audio-controls">
+            <input type="file" id="audio-input" accept="audio/*">
+            <div class="player-controls">
+                <button id="play-btn" disabled>Play</button>
+                <button id="pause-btn" disabled>Pause</button>
+            </div>
+        </div>
+        
+        <div class="visualizer-container">
+            <canvas id="visualizer"></canvas>
+        </div>
+        
+        <div class="parameter-controls">
+            <div class="control-group">
+                <label for="pattern-mode">Pattern Mode</label>
+                <select id="pattern-mode">
+                    <option value="classic">Classic Chladni</option>
+                    <option value="wave">Wave Interference</option>
+                    <option value="radial">Radial</option>
+                    <option value="spectrum">Spectrum Adaptive</option>
+                    <option value="auto">Auto (Changes with Music)</option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label for="freq-emphasis">Frequency Emphasis</label>
+                <select id="freq-emphasis">
+                    <option value="all">Full Spectrum</option>
+                    <option value="bass">Bass Heavy</option>
+                    <option value="mid">Mids</option>
+                    <option value="treble">Treble</option>
+                    <option value="dynamic">Dynamic (Follows Dominant)</option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label for="frequency-scale">Frequency Scale</label>
+                <input type="range" id="frequency-scale" min="1" max="20" value="10">
+                <span class="value-display"></span>
+            </div>
+
+            <div class="control-group">
+                <label for="particle-count">Particle Count</label>
+                <input type="range" id="particle-count" min="1000" max="10000" value="5000" step="100">
+                <span class="value-display"></span>
+            </div>
+
+            <div class="control-group">
+                <label for="symmetry">Symmetry Lines</label>
+                <input type="range" id="symmetry" min="2" max="16" value="8" step="1">
+                <span class="value-display"></span>
+            </div>
+
+            <div class="control-group">
+                <label for="sensitivity">Sensitivity</label>
+                <input type="range" id="sensitivity" min="1" max="100" value="50">
+                <span class="value-display"></span>
+            </div>
+
+            <div class="control-group">
+                <label for="color1">Primary Color</label>
+                <input type="color" id="color1" value="#ff5555">
+            </div>
+
+            <div class="control-group">
+                <label for="color2">Secondary Color</label>
+                <input type="color" id="color2" value="#5555ff">
+            </div>
+        </div>
+
+        <div class="info-panel">
+            <div class="frequency-display">
+                <div class="freq-bar bass">
+                    <label>Bass</label>
+                    <div class="bar-fill"></div>
+                </div>
+                <div class="freq-bar mid">
+                    <label>Mid</label>
+                    <div class="bar-fill"></div>
+                </div>
+                <div class="freq-bar treble">
+                    <label>Treble</label>
+                    <div class="bar-fill"></div>
+                </div>
+            </div>
+            <div class="current-mode">
+                <span class="label">Current Mode:</span>
+                <span class="value">Classic</span>
+            </div>
+            <div class="dominant-freq">
+                <span class="label">Dominant Frequency:</span>
+                <span class="value">None</span>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
